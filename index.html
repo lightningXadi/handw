@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HandScript</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:#f5f0e8;min-height:100vh;}
+
+header{background:linear-gradient(160deg,#1c0e08,#3a1e0e);color:#fdf6e3;
+  text-align:center;padding:28px 20px 20px;position:relative;z-index:1;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.6rem);
+  background:linear-gradient(120deg,#e8c87a,#ffd700,#e8c87a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:3px;}
+header p{font-size:.78rem;opacity:.55;font-weight:300;letter-spacing:.07em;}
+
+main{max-width:860px;margin:0 auto;padding:18px 13px;}
+
+.card{background:#fff;border-radius:13px;padding:20px;border:1px solid #e8e0d4;
+  box-shadow:0 2px 14px rgba(40,20,8,.06);margin-bottom:13px;}
+.card h2{font-family:'Playfair Display',serif;font-size:1.2rem;color:#231008;margin-bottom:11px;}
+
+textarea{width:100%;padding:11px;border:1.5px solid #d0c8be;border-radius:7px;
+  font-family:'Lato',sans-serif;font-size:.95rem;line-height:1.6;
+  color:#231008;background:#fdfaf5;resize:vertical;outline:none;min-height:90px;}
+textarea:focus{border-color:#a07030;}
+
+/* buttons */
+button{font-family:'Lato',sans-serif;font-weight:700;cursor:pointer;border:none;border-radius:7px;transition:.15s;}
+.btn{background:linear-gradient(135deg,#231008,#3a1e0e);color:#ffd700;padding:10px 22px;font-size:.86rem;}
+.btn:hover{opacity:.87;}
+.btn-sm{background:transparent;color:#3a1e0e;border:1.5px solid #bfa882;padding:7px 14px;font-size:.8rem;}
+.btn-sm:hover{background:#fdf0e0;}
+.btn-dl{background:#fdf6e3;color:#231008;border:1.5px solid #231008;padding:7px 14px;font-size:.8rem;}
+.row{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap;align-items:center;justify-content:flex-end;}
+
+/* section toggle */
+.sec-toggle{background:none;border:none;color:#7a5030;font-size:.76rem;font-weight:700;
+  cursor:pointer;padding:0;display:flex;align-items:center;gap:4px;margin-top:9px;
+  letter-spacing:.04em;text-transform:uppercase;}
+.sec-toggle:hover{color:#3a1e0e;}
+.sec-body{display:none;margin-top:12px;border-top:1px solid #ede0d0;padding-top:13px;}
+.sec-body.open{display:block;}
+
+/* tab bar for settings sections */
+.tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap;}
+.tab{padding:5px 13px;border-radius:6px;font-size:.75rem;font-weight:700;cursor:pointer;
+  background:#f5f0e8;color:#7a5030;border:1px solid #ddd4c0;transition:.15s;}
+.tab.on{background:#3a1e0e;color:#ffd700;border-color:#3a1e0e;}
+.tab-panel{display:none;}
+.tab-panel.on{display:block;}
+
+/* sliders */
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;}
+.srow{display:flex;flex-direction:column;gap:3px;}
+.slabel{font-size:.7rem;color:#6b5040;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+.sctl{display:flex;align-items:center;gap:7px;}
+input[type=range]{flex:1;accent-color:#a07030;}
+.sval{font-size:.74rem;color:#3a1e0e;font-weight:700;min-width:38px;text-align:right;}
+
+/* per-letter grid */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:5px;margin-top:8px;}
+.litem{background:#fdfaf5;border:1px solid #e8dfd0;border-radius:7px;padding:5px 7px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;}
+.lname{font-size:1rem;font-weight:700;color:#3a1e0e;font-family:'Playfair Display',serif;line-height:1;}
+.litem input[type=range]{width:100%;accent-color:#a07030;margin:1px 0;}
+.litemval{font-size:.65rem;color:#7a5030;font-weight:700;}
+.litem-row{display:flex;width:100%;gap:2px;}
+.litem-row input[type=range]{flex:1;accent-color:#a07030;}
+.ltag{font-size:.55rem;color:#9b7060;text-transform:uppercase;font-weight:700;}
+
+/* background selector */
+.bg-options{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.bg-opt{padding:6px 14px;border-radius:7px;font-size:.78rem;font-weight:700;cursor:pointer;
+  border:1.5px solid #d0c8be;background:#fdfaf5;color:#4a2c1a;transition:.15s;}
+.bg-opt.on{border-color:#3a1e0e;background:#3a1e0e;color:#ffd700;}
+
+/* output */
+.out-wrap{border:1px solid #e0d0b4;border-radius:9px;background:#fdf6e3;
+  padding:10px;margin-top:12px;overflow:auto;min-height:80px;}
+#output-canvas{display:block;max-width:100%;}
+
+/* missing notice */
+.notice{font-size:.72rem;color:#9b6040;background:#fff8f0;
+  border:1px solid #f0d0b0;border-radius:6px;padding:6px 10px;margin-top:7px;display:none;
+  line-height:1.5;}
+</style>
+</head>
+<body>
+<header>
+  <h1>✒️ HandScript</h1>
+  <p>Image-based · No API key · Works offline</p>
+</header>
+<main>
+
+  <!-- Input card -->
+  <div class="card">
+    <h2>Type your text</h2>
+    <textarea id="txt" placeholder="Type anything… letters, numbers, punctuation"></textarea>
+    <div id="notice" class="notice"></div>
+
+    <!-- Settings toggle -->
+    <button class="sec-toggle" onclick="toggleSec('main-sec','main-arrow')">
+      <span id="main-arrow">▶</span> Settings &amp; adjustments
+    </button>
+    <div class="sec-body" id="main-sec">
+
+      <!-- Tab bar -->
+      <div class="tabs">
+        <div class="tab on" onclick="switchTab('tab-global',this)">Global</div>
+        <div class="tab"    onclick="switchTab('tab-size',this)">Per-letter size</div>
+        <div class="tab"    onclick="switchTab('tab-yoff',this)">Y offset (descenders)</div>
+        <div class="tab"    onclick="switchTab('tab-bg',this)">Background</div>
+      </div>
+
+      <!-- Tab: Global -->
+      <div class="tab-panel on" id="tab-global">
+        <div class="grid2">
+          <div class="srow"><span class="slabel">Global scale</span>
+            <div class="sctl"><input type="range" id="s-global" min="0.5" max="4" step="0.05" value="1.8"
+              oninput="sv('v-global',parseFloat(this.value).toFixed(2)+'×');render()"/>
+            <span class="sval" id="v-global">1.80×</span></div></div>
+
+          <div class="srow"><span class="slabel">Letter spacing</span>
+            <div class="sctl"><input type="range" id="s-lsp" min="-8" max="30" step="1" value="2"
+              oninput="sv('v-lsp',this.value+'px');render()"/>
+            <span class="sval" id="v-lsp">2px</span></div></div>
+
+          <div class="srow"><span class="slabel">Word spacing</span>
+            <div class="sctl"><input type="range" id="s-wsp" min="5" max="100" step="1" value="22"
+              oninput="sv('v-wsp',this.value+'px');render()"/>
+            <span class="sval" id="v-wsp">22px</span></div></div>
+
+          <div class="srow"><span class="slabel">Line height</span>
+            <div class="sctl"><input type="range" id="s-lh" min="40" max="200" step="2" value="90"
+              oninput="sv('v-lh',this.value+'px');render()"/>
+            <span class="sval" id="v-lh">90px</span></div></div>
+
+          <div class="srow"><span class="slabel">Baseline jitter</span>
+            <div class="sctl"><input type="range" id="s-jitter" min="0" max="14" step="1" value="3"
+              oninput="sv('v-jitter',this.value+'px');render()"/>
+            <span class="sval" id="v-jitter">3px</span></div></div>
+
+          <div class="srow"><span class="slabel">Canvas width</span>
+            <div class="sctl"><input type="range" id="s-cw" min="300" max="1400" step="20" value="700"
+              oninput="sv('v-cw',this.value+'px');render()"/>
+            <span class="sval" id="v-cw">700px</span></div></div>
+        </div>
+      </div>
+
+      <!-- Tab: Per-letter size -->
+      <div class="tab-panel" id="tab-size">
+        <p style="font-size:.72rem;color:#7a5040;margin-bottom:8px;">
+          Multiplier on top of global scale. Adjust letters that appear too big or small.</p>
+        <div class="lgrid" id="size-grid"></div>
+      </div>
+
+      <!-- Tab: Y offset -->
+      <div class="tab-panel" id="tab-yoff">
+        <p style="font-size:.72rem;color:#7a5040;margin-bottom:8px;">
+          Shift individual letters up (negative) or down (positive).
+          Use for descenders like <b>f, g, j, p, q, y</b> whose tails hang below the baseline,
+          or ascenders like <b>b, d, h, k, l</b> that sit above.</p>
+        <div class="lgrid" id="yoff-grid"></div>
+      </div>
+
+      <!-- Tab: Background -->
+      <div class="tab-panel" id="tab-bg">
+        <p style="font-size:.72rem;color:#7a5040;margin-bottom:8px;">Choose the paper style for your output.</p>
+        <div class="bg-options">
+          <div class="bg-opt on"  onclick="setBg('plain',this)">Plain white</div>
+          <div class="bg-opt"     onclick="setBg('cream',this)">Cream paper</div>
+          <div class="bg-opt"     onclick="setBg('lined',this)">Lined notebook</div>
+          <div class="bg-opt"     onclick="setBg('wide',this)">Wide ruled</div>
+          <div class="bg-opt"     onclick="setBg('grid',this)">Grid paper</div>
+          <div class="bg-opt"     onclick="setBg('dotted',this)">Dotted</div>
+          <div class="bg-opt"     onclick="setBg('manila',this)">Manila / kraft</div>
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
+          <div class="srow"><span class="slabel">Margin (left red line)</span>
+            <div class="sctl"><input type="range" id="s-margin" min="0" max="1" step="1" value="0"
+              oninput="sv('v-margin',this.value=='1'?'On':'Off');render()"/>
+            <span class="sval" id="v-margin">Off</span></div></div>
+          <div class="srow"><span class="slabel">Padding</span>
+            <div class="sctl"><input type="range" id="s-pad" min="10" max="80" step="2" value="28"
+              oninput="sv('v-pad',this.value+'px');render()"/>
+            <span class="sval" id="v-pad">28px</span></div></div>
+        </div>
+      </div>
+
+    </div><!-- /sec-body -->
+
+    <div class="row">
+      <button class="btn-sm" onclick="resetAll()">Reset all</button>
+      <button class="btn" onclick="render()">✍ Generate</button>
+    </div>
+  </div>
+
+  <!-- Result card -->
+  <div class="card" id="result-card" style="display:none">
+    <h2>Your handwriting</h2>
+    <div class="out-wrap"><canvas id="output-canvas"></canvas></div>
+    <div class="row">
+      <button class="btn-sm" onclick="render()">↻ New variation</button>
+      <button class="btn-dl" onclick="dlPNG()">⬇ PNG</button>
+      <button class="btn-dl" onclick="dlJPG()">⬇ JPG</button>
+    </div>
+  </div>
+
+</main>
+
+<script src="letters_data.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────────
+const ALL_CHARS = Object.keys(CHAR_MAP);   // every supported character
+const LOADED    = Object.keys(LETTERS);    // chars that have images
+
+const letterScale  = {};   // size multiplier per char
+const letterYOff   = {};   // y offset in px per char (pre-scale)
+LOADED.forEach(c => { letterScale[c] = 1.0; letterYOff[c] = 0; });
+
+let bgStyle = 'plain';
+
+// ── Helpers ───────────────────────────────────────────────────────
+function sv(id, val) { document.getElementById(id).textContent = val; }
+function gv(id)      { return parseFloat(document.getElementById(id).value); }
+
+function toggleSec(id, arrowId) {
+  const el = document.getElementById(id);
+  const ar = document.getElementById(arrowId);
+  el.classList.toggle('open');
+  ar.textContent = el.classList.contains('open') ? '▼' : '▶';
+}
+
+function switchTab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  el.classList.add('on');
+}
+
+function setBg(name, el) {
+  bgStyle = name;
+  document.querySelectorAll('.bg-opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+  render();
+}
+
+// ── Build per-letter controls ─────────────────────────────────────
+function buildGrids() {
+  const sg = document.getElementById('size-grid');
+  const yg = document.getElementById('yoff-grid');
+  sg.innerHTML = ''; yg.innerHTML = '';
+
+  LOADED.forEach(c => {
+    const label = c === ' ' ? 'SPC' : c;
+
+    // Size item
+    const sd = document.createElement('div'); sd.className = 'litem';
+    sd.innerHTML = `<span class="lname">${label}</span>
+      <input type="range" min="0.3" max="2.5" step="0.05" value="1.0" id="ls-${encodeURI(c)}"
+        oninput="letterScale[${JSON.stringify(c)}]=parseFloat(this.value);
+                 document.getElementById('lsv-${encodeURI(c)}').textContent=parseFloat(this.value).toFixed(2)+'×';
+                 render()"/>
+      <span class="litemval" id="lsv-${encodeURI(c)}">1.00×</span>`;
+    sg.appendChild(sd);
+
+    // Y-offset item
+    const yd = document.createElement('div'); yd.className = 'litem';
+    yd.innerHTML = `<span class="lname">${label}</span>
+      <input type="range" min="-60" max="60" step="1" value="0" id="ly-${encodeURI(c)}"
+        oninput="letterYOff[${JSON.stringify(c)}]=parseInt(this.value);
+                 document.getElementById('lyv-${encodeURI(c)}').textContent=(this.value>0?'+':'')+this.value+'px';
+                 render()"/>
+      <span class="litemval" id="lyv-${encodeURI(c)}">0px</span>`;
+    yg.appendChild(yd);
+  });
+}
+buildGrids();
+
+// ── Reset ─────────────────────────────────────────────────────────
+function resetAll() {
+  document.getElementById('s-global').value  = 1.8;   sv('v-global','1.80×');
+  document.getElementById('s-lsp').value     = 2;     sv('v-lsp','2px');
+  document.getElementById('s-wsp').value     = 22;    sv('v-wsp','22px');
+  document.getElementById('s-lh').value      = 90;    sv('v-lh','90px');
+  document.getElementById('s-jitter').value  = 3;     sv('v-jitter','3px');
+  document.getElementById('s-cw').value      = 700;   sv('v-cw','700px');
+  document.getElementById('s-margin').value  = 0;     sv('v-margin','Off');
+  document.getElementById('s-pad').value     = 28;    sv('v-pad','28px');
+  LOADED.forEach(c => {
+    letterScale[c] = 1.0; letterYOff[c] = 0;
+    const se = document.getElementById('ls-'+encodeURI(c));
+    const ye = document.getElementById('ly-'+encodeURI(c));
+    const sv2 = document.getElementById('lsv-'+encodeURI(c));
+    const yv  = document.getElementById('lyv-'+encodeURI(c));
+    if(se) se.value = 1.0; if(sv2) sv2.textContent = '1.00×';
+    if(ye) ye.value = 0;   if(yv)  yv.textContent  = '0px';
+  });
+  render();
+}
+
+// ── Image cache ───────────────────────────────────────────────────
+const imgCache = {};
+function getImg(ch, vi) {
+  const key = ch + '_' + vi;
+  if (imgCache[key]) return imgCache[key];
+  const d = LETTERS[ch][vi];
+  const img = new Image();
+  img.src = 'data:image/png;base64,' + d.b64;
+  imgCache[key] = { img, w: d.w, h: d.h };
+  return imgCache[key];
+}
+
+let preloaded = false;
+function preloadAll() {
+  return new Promise(res => {
+    let total = 0, done = 0;
+    LOADED.forEach(ch => {
+      LETTERS[ch].forEach((_, i) => {
+        total++;
+        const e = getImg(ch, i);
+        if (e.img.complete) { done++; if(done===total) res(); }
+        else e.img.onload = () => { done++; if(done===total) res(); };
+      });
+    });
+    if (!total) res();
+  });
+}
+
+// ── Background drawing ────────────────────────────────────────────
+const BG_COLORS = {
+  plain:  '#ffffff', cream:  '#fdf6e3', lined:  '#fefefe',
+  wide:   '#fefefe', grid:   '#fefefe', dotted: '#fefefe', manila: '#e8d5a3',
+};
+const LINE_COLORS = {
+  lined:'#c5d8f0', wide:'#c5d8f0', grid:'#d0e4d0', dotted:'#b8c8d8', cream:'#e0d0b0',
+};
+
+function drawBackground(ctx, w, h, lh, padY, padX) {
+  const bg   = BG_COLORS[bgStyle] || '#fff';
+  const lc   = LINE_COLORS[bgStyle] || '#ddd';
+  const margin = gv('s-margin') === 1;
+
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, w, h);
+
+  if (bgStyle === 'lined' || bgStyle === 'wide') {
+    const spacing = bgStyle === 'wide' ? lh : Math.min(lh, 36);
+    ctx.strokeStyle = lc; ctx.lineWidth = 0.8;
+    for (let y = padY + lh * 0.82; y < h + spacing; y += spacing) {
+      ctx.beginPath(); ctx.moveTo(0, Math.round(y)); ctx.lineTo(w, Math.round(y)); ctx.stroke();
+    }
+  } else if (bgStyle === 'grid') {
+    const sp = Math.min(lh * 0.5, 30);
+    ctx.strokeStyle = lc; ctx.lineWidth = 0.6;
+    for (let y = 0; y < h; y += sp) { ctx.beginPath(); ctx.moveTo(0,Math.round(y)); ctx.lineTo(w,Math.round(y)); ctx.stroke(); }
+    for (let x = 0; x < w; x += sp) { ctx.beginPath(); ctx.moveTo(Math.round(x),0); ctx.lineTo(Math.round(x),h); ctx.stroke(); }
+  } else if (bgStyle === 'dotted') {
+    const sp = Math.min(lh * 0.5, 28);
+    ctx.fillStyle = lc;
+    for (let y = sp; y < h; y += sp)
+      for (let x = sp; x < w; x += sp)
+        { ctx.beginPath(); ctx.arc(Math.round(x),Math.round(y),1.2,0,Math.PI*2); ctx.fill(); }
+  } else if (bgStyle === 'cream') {
+    ctx.strokeStyle = '#d8c89a'; ctx.lineWidth = 0.6;
+    for (let y = padY + lh * 0.82; y < h + lh; y += lh) {
+      ctx.beginPath(); ctx.moveTo(0, Math.round(y)); ctx.lineTo(w, Math.round(y)); ctx.stroke();
+    }
+  }
+
+  // Red margin line
+  if (margin) {
+    ctx.strokeStyle = '#e87070'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(padX - 4, 0); ctx.lineTo(padX - 4, h); ctx.stroke();
+  }
+}
+
+// ── Main render ───────────────────────────────────────────────────
+let renderTimer = null;
+async function render() {
+  const raw = document.getElementById('txt').value;
+  if (!raw.trim()) { document.getElementById('result-card').style.display = 'none'; return; }
+
+  if (!preloaded) { await preloadAll(); preloaded = true; }
+
+  const globalScale = gv('s-global');
+  const lsp         = gv('s-lsp');
+  const wsp         = gv('s-wsp');
+  const lh          = gv('s-lh');
+  const jitter      = gv('s-jitter');
+  const cw          = gv('s-cw');
+  const pad         = gv('s-pad');
+
+  const missing = new Set();
+
+  // ── Layout engine: pass once to measure, once to draw ───────────
+  function layout(ctx, draw) {
+    let x = pad, y = pad, maxY = pad;
+    const tokens = raw.split(/(\s+)/);
+
+    for (const token of tokens) {
+      if (/^\s+$/.test(token)) {
+        x += wsp * Math.max(1, token.length);
+        if (x > cw - pad) { x = pad; y += lh; }
+        continue;
+      }
+
+      // Measure word width for wrap check
+      let ww = 0;
+      for (const ch of token) {
+        if (!LETTERS[ch]) { ww += wsp * 0.55; continue; }
+        const vi = Math.floor(Math.random() * LETTERS[ch].length);
+        const e  = getImg(ch, vi);
+        const sc = globalScale * (letterScale[ch] || 1);
+        ww += Math.round(e.w * sc) + lsp;
+      }
+      if (x > pad && x + ww > cw - pad) { x = pad; y += lh; }
+
+      // Draw each char
+      for (const ch of token) {
+        if (!LETTERS[ch]) {
+          missing.add(ch);
+          if (draw) { ctx.fillStyle='#ddd'; ctx.fillRect(x, y + lh*0.55, Math.round(wsp*0.4), 1.5); }
+          x += Math.round(wsp * 0.55);
+          continue;
+        }
+        const vi  = Math.floor(Math.random() * LETTERS[ch].length);
+        const e   = getImg(ch, vi);
+        const sc  = globalScale * (letterScale[ch] || 1);
+        const dw  = Math.round(e.w * sc);
+        const dh  = Math.round(e.h * sc);
+        const yOff = (letterYOff[ch] || 0) * sc;
+        const base = y + lh * 0.74;
+        const jit  = jitter > 0 ? (Math.random() * jitter * 2 - jitter) : 0;
+        const dy   = Math.round(base - dh + jit + yOff);
+        if (draw) ctx.drawImage(e.img, x, dy, dw, dh);
+        x += dw + lsp;
+        maxY = Math.max(maxY, dy + dh);
+      }
+    }
+    return maxY + pad;
+  }
+
+  // Dry run for height
+  const totalH = Math.max(layout(null, false), lh + pad * 2);
+
+  // Set up canvas
+  const canvas = document.getElementById('output-canvas');
+  canvas.width  = cw;
+  canvas.height = totalH;
+  const ctx = canvas.getContext('2d');
+
+  drawBackground(ctx, cw, totalH, lh, pad, pad);
+  layout(ctx, true);
+
+  // Missing notice
+  const mn = document.getElementById('notice');
+  const ma = [...missing].filter(c => c.trim());
+  if (ma.length) {
+    const names = ma.map(c => {
+      const prefix = CHAR_MAP[c];
+      return prefix ? `"${c}" (${prefix}_1.jpg)` : `"${c}"`;
+    });
+    mn.textContent = '⚠ No image for: ' + names.join(', ') + ' — add them to the alaphabet/ folder and run node build_data.js';
+    mn.style.display = 'block';
+  } else {
+    mn.style.display = 'none';
+  }
+
+  document.getElementById('result-card').style.display = 'block';
+}
+
+// ── Downloads ─────────────────────────────────────────────────────
+function dlPNG() {
+  const a = document.createElement('a');
+  a.href = document.getElementById('output-canvas').toDataURL('image/png');
+  a.download = 'handwriting.png'; a.click();
+}
+function dlJPG() {
+  const a = document.createElement('a');
+  a.href = document.getElementById('output-canvas').toDataURL('image/jpeg', 0.95);
+  a.download = 'handwriting.jpg'; a.click();
+}
+
+// ── Auto-render ───────────────────────────────────────────────────
+document.getElementById('txt').addEventListener('input', () => {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(render, 350);
+});
+</script>
+</body>
+</html>
